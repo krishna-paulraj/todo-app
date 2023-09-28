@@ -3,6 +3,7 @@ import { useTheme } from "next-themes";
 import { Moon, Sun, LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
+import { SignOutButton, UserButton } from "@clerk/nextjs";
 
 export default function Navbar() {
   const [mode, setMode] = useState(true);
@@ -29,10 +30,7 @@ export default function Navbar() {
             <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           </Button>
         )}
-        <Button variant="outline" size="default" className="flex gap-3">
-          <h1 className="hidden md:block">Logout</h1>
-          <LogOutIcon className="h-[1.2rem] w-[1.2rem]" />
-        </Button>
+        <UserButton afterSignOutUrl="/" />
       </div>
     </nav>
   );

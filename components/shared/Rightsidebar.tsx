@@ -43,7 +43,7 @@ export default function Rightsidebar() {
 
   return (
     <>
-      <section className="h-[80vh] my-10 w-[30vw] rounded-lg md:hidden">
+      <section className="h-[80vh] w-[30vw] rounded-lg md:hidden">
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="absolute bottom-5 p-5">
@@ -71,14 +71,14 @@ export default function Rightsidebar() {
                         />
                       </div>
                       <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor="framework">Reminder Notes</Label>
+                        <Label htmlFor="notes">Reminder Notes</Label>
                         <Textarea
                           placeholder="Type your message here."
                           className="w-[80vw]"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="framework">Schedule: </Label>
+                        <Label htmlFor="schedule">Schedule: </Label>
                         <div className="w-[80vw] flex gap-2">
                           <Popover>
                             <PopoverTrigger asChild>
