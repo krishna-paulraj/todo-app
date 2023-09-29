@@ -46,7 +46,7 @@ export default function Rightsidebar() {
       <section className="h-[80vh] w-[30vw] rounded-lg md:hidden">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="absolute bottom-5 p-5">
+            <Button variant="outline" className="fixed left-6 bottom-5 p-5">
               Add 🎯
             </Button>
           </PopoverTrigger>
@@ -139,8 +139,8 @@ export default function Rightsidebar() {
           </PopoverContent>
         </Popover>
       </section>
-      <section className="hidden h-[80vh] my-10 w-[30vw] rounded-lg md:block">
-        <Card className="w-full">
+      <section className="hidden h-[66vh] w-[30vw] rounded-lg md:block">
+        <Card className="h-full w-full">
           <CardHeader>
             <CardTitle>Create a todo 🎯</CardTitle>
             <CardDescription>Add your task and get reminders.</CardDescription>

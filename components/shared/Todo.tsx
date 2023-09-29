@@ -1,5 +1,9 @@
-import React from "react";
+import Todocard from "./cards/Todocard";
 
 export default function Todo() {
-  return <div>Todo</div>;
+  return (
+    <section>
+      <Todocard />
+    </section>
+  );
 }
