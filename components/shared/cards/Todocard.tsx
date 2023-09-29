@@ -107,8 +107,8 @@ export default function Todocard() {
           <CardHeader className="space-y-2">
             <CardTitle>Todo</CardTitle>
             <CardDescription>
-              "Believe you can, and you're halfway there." <br /> - Theodore
-              Roosevelt
+              &quot;Believe you can, and you&apos;re halfway there.&quot; <br />{" "}
+              - Theodore Roosevelt
             </CardDescription>
           </CardHeader>
           <ScrollArea className="h-[50vh] w-[350px] rounded-md">
@@ -152,8 +152,8 @@ export default function Todocard() {
           <CardHeader className="space-y-2">
             <CardTitle>Completed</CardTitle>
             <CardDescription>
-              "Believe you can, and you're halfway there." <br /> - Theodore
-              Roosevelt
+              &apos;Believe you can, and you&apos;re halfway there.&apos; <br />{" "}
+              - Theodore Roosevelt
             </CardDescription>
           </CardHeader>
           <ScrollArea className="h-[50vh] w-[350px] rounded-md">
