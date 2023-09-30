@@ -111,13 +111,13 @@ export default function Todocard() {
               - Theodore Roosevelt
             </CardDescription>
           </CardHeader>
-          <ScrollArea className="h-[50vh] w-[350px] rounded-md">
+          <ScrollArea className="h-[60vh] w-[350px] rounded-md">
             <CardContent>
               <div>
                 {data.map((todo) => {
                   return (
                     <div key={todo.id}>
-                      <Card className="w-[320px]">
+                      <Card className="w-[320px] mb-3 shadow-md">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-3">
                             {todo.title}
@@ -156,13 +156,13 @@ export default function Todocard() {
               - Theodore Roosevelt
             </CardDescription>
           </CardHeader>
-          <ScrollArea className="h-[50vh] w-[350px] rounded-md">
+          <ScrollArea className="h-[60vh] w-[350px] rounded-md">
             <CardContent>
               <div>
                 {data.map((todo) => {
                   return (
                     <div key={todo.id}>
-                      <Card className="w-[320px]">
+                      <Card className="w-[320px] mb-3 shadow-md">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-3">
                             {todo.title}

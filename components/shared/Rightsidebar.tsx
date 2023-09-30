@@ -1,4 +1,6 @@
+import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -30,15 +32,50 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "../ui/use-toast";
+
 export default function Rightsidebar() {
-  const [date, setDate] = useState<Date>();
+  type Todo = {
+    title: string;
+    notes: string;
+    date: Date | undefined;
+    label: string;
+  };
+
+  const [loading, setLoading] = useState(false);
+
+  const [data, setData] = useState<Todo>({
+    title: "",
+    notes: "",
+    date: undefined,
+    label: "",
+  });
   const { toast } = useToast();
 
   const toaster = () => {
     toast({
-      title: "Scheduled: Catch up",
-      description: "Friday, February 10, 2023 at 5:57 PM",
+      title: data.title,
+      description: data.date?.toDateString(),
     });
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      const res = await axios.post("/api/todo", data);
+      if (res.data.error) {
+        toast({
+          title: "Somthing went wrong",
+        });
+      }
+      toaster();
+    } catch (error) {
+      toast({
+        title: "Error occured",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,14 +97,17 @@ export default function Rightsidebar() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form>
+                  <form onSubmit={submitHandler}>
                     <div className="grid w-full items-center gap-4">
                       <div className="flex flex-col space-y-1.5">
                         <Label htmlFor="name">Title</Label>
                         <Input
-                          id="name"
+                          name="title"
                           placeholder="Whats the todo ?"
                           className="w-[80vw]"
+                          onChange={(e) => {
+                            setData({ ...data, title: e.target.value });
+                          }}
                         />
                       </div>
                       <div className="flex flex-col space-y-1.5">
@@ -75,6 +115,10 @@ export default function Rightsidebar() {
                         <Textarea
                           placeholder="Type your message here."
                           className="w-[80vw]"
+                          name="notes"
+                          onChange={(e) => {
+                            setData({ ...data, notes: e.target.value });
+                          }}
                         />
                       </div>
                       <div>
@@ -86,12 +130,12 @@ export default function Rightsidebar() {
                                 variant={"outline"}
                                 className={cn(
                                   "w-[250px] justify-start text-left font-normal",
-                                  !date && "text-muted-foreground"
+                                  !data.date && "text-muted-foreground"
                                 )}
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {date ? (
-                                  format(date, "PPP")
+                                {data.date ? (
+                                  format(data.date, "PPP")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -100,8 +144,10 @@ export default function Rightsidebar() {
                             <PopoverContent className="w-auto p-0">
                               <Calendar
                                 mode="single"
-                                selected={date}
-                                onSelect={setDate}
+                                selected={data.date}
+                                onSelect={(selectedDate) => {
+                                  setData({ ...data, date: selectedDate });
+                                }}
                                 initialFocus
                               />
                             </PopoverContent>
@@ -112,7 +158,14 @@ export default function Rightsidebar() {
                       <div className="flex justify-between items-center">
                         <Label htmlFor="framework">Label: </Label>
 
-                        <Select>
+                        <Select
+                          onValueChange={() => {
+                            setData({
+                              ...data,
+                              label: "Important",
+                            });
+                          }}
+                        >
                           <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Mark as" />
                           </SelectTrigger>
@@ -127,30 +180,44 @@ export default function Rightsidebar() {
                         </Select>
                       </div>
                     </div>
+                    <Button
+                      disabled={loading}
+                      className="w-full mt-3"
+                      type="submit"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Please wait
+                        </>
+                      ) : (
+                        "Add"
+                      )}
+                    </Button>
                   </form>
                 </CardContent>
-                <CardFooter>
-                  <Button className="w-full" onClick={toaster}>
-                    Add
-                  </Button>
-                </CardFooter>
               </Card>
             </section>
           </PopoverContent>
         </Popover>
       </section>
-      <section className="hidden h-[66vh] w-[30vw] rounded-lg md:block">
-        <Card className="h-full w-full">
+      <section className="hidden h-[65vh] w-[30vw] shadow-md rounded-lg md:mt-12 md:block">
+        <Card className="h-[65vh] w-full">
           <CardHeader>
             <CardTitle>Create a todo 🎯</CardTitle>
             <CardDescription>Add your task and get reminders.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={submitHandler}>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Title</Label>
-                  <Input id="name" placeholder="Whats the todo ?" />
+                  <Input
+                    placeholder="Whats the todo ?"
+                    onChange={(e) => {
+                      setData({ ...data, title: e.target.value });
+                    }}
+                  />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="framework">Reminder Notes</Label>
@@ -165,12 +232,12 @@ export default function Rightsidebar() {
                           variant={"outline"}
                           className={cn(
                             "w-[280px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !data.date && "text-muted-foreground"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? (
-                            format(date, "PPP")
+                          {data.date ? (
+                            format(data.date, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -179,8 +246,10 @@ export default function Rightsidebar() {
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={date}
-                          onSelect={setDate}
+                          selected={data.date}
+                          onSelect={(selectedDate) => {
+                            setData({ ...data, date: selectedDate });
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -191,7 +260,14 @@ export default function Rightsidebar() {
                 <div className="flex justify-between items-center">
                   <Label htmlFor="framework">Label: </Label>
 
-                  <Select>
+                  <Select
+                    onValueChange={() => {
+                      setData({
+                        ...data,
+                        label: "Important",
+                      });
+                    }}
+                  >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Mark as" />
                     </SelectTrigger>
@@ -204,13 +280,23 @@ export default function Rightsidebar() {
                   </Select>
                 </div>
               </div>
+              <Button disabled={loading} className="w-full mt-3" type="submit">
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  "Add"
+                )}
+              </Button>
             </form>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full" onClick={toaster}>
-              Add
-            </Button>
-          </CardFooter>
+        </Card>
+        <Card className="hiddem md:block h-[10vh] mt-2">
+          <CardHeader>
+            <CardDescription>Tip: Check out this app on Github</CardDescription>
+          </CardHeader>
         </Card>
       </section>
     </>

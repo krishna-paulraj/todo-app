@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "../ui/badge";
 
 export default function Navbar() {
   const { setTheme } = useTheme();
@@ -17,7 +18,8 @@ export default function Navbar() {
   return (
     <nav className="h-[10vh] w-full flex justify-between items-center px-3 md:px-28">
       <div>
-        <h1 className="text-2xl">Todo App 🎯</h1>
+        <h1 className="text-2xl">Alertify 🎯</h1>
+        <Badge>Beta</Badge>
       </div>
       <div className="flex gap-2">
         <DropdownMenu>

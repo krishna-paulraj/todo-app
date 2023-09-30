@@ -12,7 +12,7 @@ const todoSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema({
-  username: {
+  user_id: {
     type: String,
     required: true,
     unique: true,
