@@ -52,3 +52,44 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: err.message });
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const { id, title, notes, date, label, completed } = await request.json();
+
+    const { userId }: { userId: string | null } = auth();
+
+    const user = await User.findOne({ user_id: userId });
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "To-do 'id' is required" },
+        { status: 400 }
+      );
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { user_id: userId, "todos._id": id },
+      {
+        $set: {
+          "todos.$.title": title,
+          "todos.$.notes": notes,
+          "todos.$.date": date,
+          "todos.$.label": label,
+          "todos.$.completed": completed,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      message: "To-do item updated successfully",
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

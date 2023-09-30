@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Button } from "../../ui/button";
 import { format } from "date-fns";
 import {
@@ -20,60 +22,87 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { todo } from "node:test";
 
 export type Todo = {
-  id: string;
+  _id: string;
   title: string;
   notes: string;
   badge: "Important" | "Completed";
   date: Date;
 };
 
-const data: Todo[] = [
-  {
-    id: "9399hah83",
-    title: "Todo 1",
-    notes:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-    badge: "Important",
-    date: new Date("2023-09-30"),
-  },
-  {
-    id: "9399hah83",
-    title: "Todo 2",
-    notes:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-    badge: "Important",
-    date: new Date("2023-09-30"),
-  },
-  {
-    id: "9399hah83",
-    title: "Todo 3",
-    notes:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-    badge: "Important",
-    date: new Date("2023-09-30"),
-  },
-  {
-    id: "9399hah83",
-    title: "Todo 4",
-    notes:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-    badge: "Important",
-    date: new Date("2023-09-30"),
-  },
-  {
-    id: "9399hah83",
-    title: "Todo 5",
-    notes:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-    badge: "Important",
-    date: new Date("2023-09-30"),
-  },
-];
-
 export default function Todocard() {
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date | undefined>(undefined);
+
+  const [data, setData] = useState<Todo[]>([
+    {
+      _id: "9399hah83",
+      title: "Todo 1",
+      notes:
+        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
+      badge: "Important",
+      date: new Date("2023-09-30"),
+    },
+  ]);
+
+  const [compData, setCompData] = useState<Todo[]>([
+    {
+      _id: "9399hah83",
+      title: "Todo 1",
+      notes:
+        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
+      badge: "Important",
+      date: new Date("2023-09-30"),
+    },
+  ]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submitHandler = async () => {
+    if (date) {
+      console.log(date.toISOString(), "date");
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await axios.post("/api/getTodo", date);
+        const filteredData = res.data.todo.filter((todo: any) => {
+          const todoDate = todo.date;
+          return todoDate === date.toISOString() && todo.completed === false;
+        });
+        setData(filteredData);
+
+        const filteredCompData = res.data.todo.filter((todo: any) => {
+          const todoDate = todo.date;
+          return todoDate === date.toISOString() && todo.completed === true;
+        });
+        setCompData(filteredCompData);
+      } catch (err) {
+        setError("An error occurred while fetching data.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("Please select a date");
+    }
+  };
+
+  const finishedTask = async (todoId: any) => {
+    try {
+      console.log(todoId);
+      const res = await axios.patch("/api/todo", {
+        id: todoId,
+        completed: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {}, [data, compData]);
+
   return (
     <div className="flex flex-col items-start gap-2.5">
       <div className="flex justify-center items-center gap-1">
@@ -99,7 +128,9 @@ export default function Todocard() {
             />
           </PopoverContent>
         </Popover>
-        <Button className="h-8">Check</Button>
+        <Button className="h-8" onClick={submitHandler}>
+          Check
+        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-5">
@@ -116,7 +147,7 @@ export default function Todocard() {
               <div>
                 {data.map((todo) => {
                   return (
-                    <div key={todo.id}>
+                    <div key={todo._id}>
                       <Card className="w-[320px] mb-3 shadow-md">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-3">
@@ -133,12 +164,18 @@ export default function Todocard() {
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(todo.date, "PPP")}
+                            {date ? (
+                              format(date, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                           </Button>
                         </CardContent>
                         <CardFooter className="flex justify-between">
                           <Button variant="outline">Edit</Button>
-                          <Button>Finished</Button>
+                          <Button onClick={() => finishedTask(todo._id)}>
+                            Finished
+                          </Button>
                         </CardFooter>
                       </Card>
                     </div>
@@ -159,9 +196,9 @@ export default function Todocard() {
           <ScrollArea className="h-[60vh] w-[350px] rounded-md">
             <CardContent>
               <div>
-                {data.map((todo) => {
+                {compData.map((todo) => {
                   return (
-                    <div key={todo.id}>
+                    <div key={todo._id}>
                       <Card className="w-[320px] mb-3 shadow-md">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-3">
@@ -178,12 +215,16 @@ export default function Todocard() {
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(todo.date, "PPP")}
+                            {date ? (
+                              format(date, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                           </Button>
                         </CardContent>
                         <CardFooter className="flex justify-between">
-                          <Button variant="outline">Edit</Button>
-                          <Button>Finished</Button>
+                          <Button variant="outline">Undo</Button>
+                          <Button variant="destructive">Delete</Button>
                         </CardFooter>
                       </Card>
                     </div>
