@@ -6,11 +6,8 @@ import { auth } from "@clerk/nextjs";
 
 conn();
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const body = await request.json();
-    console.log(body);
-    const date = body;
     const { userId }: { userId: string | null } = auth();
 
     const user = await User.findOne({

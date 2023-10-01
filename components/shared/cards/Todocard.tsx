@@ -13,7 +13,7 @@ import {
 } from "../../ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -22,7 +22,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { todo } from "node:test";
 
 export type Todo = {
   _id: string;
@@ -33,7 +32,7 @@ export type Todo = {
 };
 
 export default function Todocard() {
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [date, setDate] = useState<Date | undefined>();
 
   const [data, setData] = useState<Todo[]>([
     {
@@ -63,11 +62,12 @@ export default function Todocard() {
   const submitHandler = async () => {
     if (date) {
       console.log(date.toISOString(), "date");
-      setLoading(true);
+
       setError(null);
 
       try {
-        const res = await axios.post("/api/getTodo", date);
+        setLoading(true);
+        const res = await axios.get("/api/getTodo");
         const filteredData = res.data.todo.filter((todo: any) => {
           const todoDate = todo.date;
           return todoDate === date.toISOString() && todo.completed === false;
@@ -92,7 +92,7 @@ export default function Todocard() {
   const finishedTask = async (todoId: any) => {
     try {
       console.log(todoId);
-      const res = await axios.patch("/api/todo", {
+      await axios.patch("/api/todo", {
         id: todoId,
         completed: true,
       });
@@ -100,8 +100,6 @@ export default function Todocard() {
       console.log(error);
     }
   };
-
-  useEffect(() => {}, [data, compData]);
 
   return (
     <div className="flex flex-col items-start gap-2.5">
@@ -129,7 +127,14 @@ export default function Todocard() {
           </PopoverContent>
         </Popover>
         <Button className="h-8" onClick={submitHandler}>
-          Check
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </>
+          ) : (
+            "Check"
+          )}
         </Button>
       </div>
 
