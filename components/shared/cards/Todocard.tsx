@@ -27,7 +27,7 @@ export type Todo = {
   _id: string;
   title: string;
   notes: string;
-  badge: "Important" | "Completed";
+  label: "Important" | "Completed";
   date: Date;
 };
 
@@ -40,7 +40,7 @@ export default function Todocard() {
       title: "Todo 1",
       notes:
         "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-      badge: "Important",
+      label: "Important",
       date: new Date("2023-09-30"),
     },
   ]);
@@ -51,7 +51,7 @@ export default function Todocard() {
       title: "Todo 1",
       notes:
         "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-      badge: "Important",
+      label: "Important",
       date: new Date("2023-09-30"),
     },
   ]);
@@ -89,13 +89,38 @@ export default function Todocard() {
     }
   };
 
-  const finishedTask = async (todoId: any) => {
+  const finishedTask = async (todoId: string) => {
     try {
       console.log(todoId);
       await axios.patch("/api/todo", {
         id: todoId,
         completed: true,
       });
+
+      await submitHandler();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const undoTask = async (todoId: string) => {
+    try {
+      console.log(todoId);
+      await axios.patch("/api/todo", {
+        id: todoId,
+        completed: false,
+      });
+      await submitHandler();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteTask = async (todoId: any) => {
+    try {
+      console.log(todoId);
+      await axios.delete(`/api/todo?id=${todoId}`);
+      await submitHandler();
     } catch (error) {
       console.log(error);
     }
@@ -157,7 +182,7 @@ export default function Todocard() {
                         <CardHeader>
                           <CardTitle className="flex items-center gap-3">
                             {todo.title}
-                            <Badge>{todo.badge}</Badge>
+                            <Badge>{todo.label}</Badge>
                           </CardTitle>
                           <CardDescription>{todo.notes}</CardDescription>
                         </CardHeader>
@@ -208,7 +233,7 @@ export default function Todocard() {
                         <CardHeader>
                           <CardTitle className="flex items-center gap-3">
                             {todo.title}
-                            <Badge>{todo.badge}</Badge>
+                            <Badge>{todo.label}</Badge>
                           </CardTitle>
                           <CardDescription>{todo.notes}</CardDescription>
                         </CardHeader>
@@ -228,8 +253,18 @@ export default function Todocard() {
                           </Button>
                         </CardContent>
                         <CardFooter className="flex justify-between">
-                          <Button variant="outline">Undo</Button>
-                          <Button variant="destructive">Delete</Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => undoTask(todo._id)}
+                          >
+                            Undo
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            onClick={() => deleteTask(todo._id)}
+                          >
+                            Delete
+                          </Button>
                         </CardFooter>
                       </Card>
                     </div>

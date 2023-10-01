@@ -19,7 +19,7 @@ export default function Navbar() {
     <nav className="h-[10vh] w-full flex justify-between items-center px-3 md:px-28">
       <div>
         <h1 className="text-2xl">Alertify 🎯</h1>
-        <Badge>Beta</Badge>
+        <Badge>Beta V1</Badge>
       </div>
       <div className="flex gap-2">
         <DropdownMenu>

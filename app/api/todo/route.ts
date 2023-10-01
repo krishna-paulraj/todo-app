@@ -93,3 +93,27 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "To-do 'id' is required" },
+        { status: 400 }
+      );
+    }
+    const { userId }: { userId: string | null } = auth();
+
+    const user = await User.findOne({ user_id: userId });
+
+    user.todos.pull({ _id: id });
+
+    await user.save();
+
+    return NextResponse.json({ message: "Todo Deleted" });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
