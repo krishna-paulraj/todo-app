@@ -2,6 +2,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "../../ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import {
   Card,
@@ -27,7 +29,7 @@ export type Todo = {
   _id: string;
   title: string;
   notes: string;
-  label: "Important" | "Completed";
+  label: string;
   date: Date;
 };
 
@@ -37,10 +39,10 @@ export default function Todocard() {
   const [data, setData] = useState<Todo[]>([
     {
       _id: "9399hah83",
-      title: "Todo 1",
+      title: "Get Started",
       notes:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-      label: "Important",
+        "Let Alertify to amplify your productivity. Add your first task by filling your own todo to your right-side bar 😉.Click Add button if you are on mobile. This project is open-sourced if you want to contibute for adding new features or to solve bugs, you are most welcomed.",
+      label: "🙏🏻",
       date: new Date("2023-09-30"),
     },
   ]);
@@ -48,10 +50,10 @@ export default function Todocard() {
   const [compData, setCompData] = useState<Todo[]>([
     {
       _id: "9399hah83",
-      title: "Todo 1",
+      title: "Alertify",
       notes:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
-      label: "Important",
+        "Alertify offer a way to increase productivity, stopping you from forgetting things, helps prioritise tasks, manage tasks effectively, use time wisely and improve time management as well as workflow.",
+      label: "🎯",
       date: new Date("2023-09-30"),
     },
   ]);
@@ -117,6 +119,31 @@ export default function Todocard() {
       await axios.patch("/api/todo", {
         id: todoId,
         completed: false,
+      });
+      await submitHandler();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUndoLoading(false);
+    }
+  };
+
+  const editTask = async (
+    todoId: string,
+    title: string,
+    notes: string,
+    label: string,
+    date: Date
+  ) => {
+    try {
+      setUndoLoading(true);
+      console.log(todoId);
+      await axios.patch("/api/todo", {
+        title: "Todo 1",
+        notes:
+          "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis cum unde eos, quas nemo aperiam, fugit ducimus culpa rem expedita accusantium consectetur quia. Eligendi pariatur accusamus architecto facere praesentium amet!",
+        label: "Important",
+        date: new Date("2023-09-30"),
       });
       await submitHandler();
     } catch (error) {
@@ -204,7 +231,7 @@ export default function Todocard() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[280px] justify-start text-left font-normal"
+                              "w-full justify-start text-left font-normal"
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -215,9 +242,9 @@ export default function Todocard() {
                             )}
                           </Button>
                         </CardContent>
-                        <CardFooter className="flex justify-between">
-                          <Button variant="outline">Edit</Button>
+                        <CardFooter className="flex justify-center items-center">
                           <Button
+                            className="w-full"
                             disabled={finishLoading}
                             onClick={() => finishedTask(todo._id)}
                           >
@@ -242,8 +269,7 @@ export default function Todocard() {
           <CardHeader className="space-y-2">
             <CardTitle>Completed</CardTitle>
             <CardDescription>
-              &apos;Believe you can, and you&apos;re halfway there.&apos; <br />{" "}
-              - Theodore Roosevelt
+              &apos;You can only lose what you cling to..&apos; <br /> - Buddha
             </CardDescription>
           </CardHeader>
           <ScrollArea className="h-[60vh] w-[350px] rounded-md">

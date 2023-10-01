@@ -35,7 +35,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -219,7 +218,12 @@ export default function Rightsidebar() {
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="framework">Reminder Notes</Label>
-                  <Textarea placeholder="Type your message here." />
+                  <Textarea
+                    placeholder="Type your message here."
+                    onChange={(e) => {
+                      setData({ ...data, notes: e.target.value });
+                    }}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="framework">Schedule: </Label>
