@@ -14,8 +14,6 @@ export async function GET(request: NextRequest) {
       user_id: userId,
     });
 
-    console.log(user.todos);
-
     const todosForDate = user.todos;
 
     return NextResponse.json({ todo: todosForDate });

@@ -57,6 +57,10 @@ export default function Todocard() {
   ]);
 
   const [loading, setLoading] = useState(false);
+  const [finishLoading, setFinishLoading] = useState(false);
+  const [undoLoading, setUndoLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
 
   const submitHandler = async () => {
@@ -91,6 +95,7 @@ export default function Todocard() {
 
   const finishedTask = async (todoId: string) => {
     try {
+      setFinishLoading(true);
       console.log(todoId);
       await axios.patch("/api/todo", {
         id: todoId,
@@ -100,11 +105,14 @@ export default function Todocard() {
       await submitHandler();
     } catch (error) {
       console.log(error);
+    } finally {
+      setFinishLoading(false);
     }
   };
 
   const undoTask = async (todoId: string) => {
     try {
+      setUndoLoading(true);
       console.log(todoId);
       await axios.patch("/api/todo", {
         id: todoId,
@@ -113,16 +121,22 @@ export default function Todocard() {
       await submitHandler();
     } catch (error) {
       console.log(error);
+    } finally {
+      setUndoLoading(false);
     }
   };
 
-  const deleteTask = async (todoId: any) => {
+  const deleteTask = async (todoId: string) => {
     try {
+      setDeleteLoading(true);
+
       console.log(todoId);
       await axios.delete(`/api/todo?id=${todoId}`);
       await submitHandler();
     } catch (error) {
       console.log(error);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -203,8 +217,17 @@ export default function Todocard() {
                         </CardContent>
                         <CardFooter className="flex justify-between">
                           <Button variant="outline">Edit</Button>
-                          <Button onClick={() => finishedTask(todo._id)}>
-                            Finished
+                          <Button
+                            disabled={finishLoading}
+                            onClick={() => finishedTask(todo._id)}
+                          >
+                            {finishLoading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              </>
+                            ) : (
+                              "Finished"
+                            )}
                           </Button>
                         </CardFooter>
                       </Card>
@@ -255,15 +278,29 @@ export default function Todocard() {
                         <CardFooter className="flex justify-between">
                           <Button
                             variant="outline"
+                            disabled={undoLoading}
                             onClick={() => undoTask(todo._id)}
                           >
-                            Undo
+                            {undoLoading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              </>
+                            ) : (
+                              "Undo"
+                            )}
                           </Button>
                           <Button
                             variant="destructive"
+                            disabled={deleteLoading}
                             onClick={() => deleteTask(todo._id)}
                           >
-                            Delete
+                            {deleteLoading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              </>
+                            ) : (
+                              "Delete"
+                            )}
                           </Button>
                         </CardFooter>
                       </Card>

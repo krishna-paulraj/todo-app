@@ -13,8 +13,6 @@ export async function POST(request: NextRequest) {
 
     const { userId }: { userId: string | null } = auth();
 
-    console.log(body, userId);
-
     const user = await User.findOne({ user_id: userId });
 
     if (!user) {
@@ -94,10 +92,10 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
-    const { id } = await request.json();
-
+    const id = request.nextUrl.searchParams.get("id");
+    console.log("hello", id);
     if (!id) {
       return NextResponse.json(
         { error: "To-do 'id' is required" },
@@ -108,7 +106,7 @@ export async function DELETE(request: Request) {
 
     const user = await User.findOne({ user_id: userId });
 
-    user.todos.pull({ _id: id });
+    user.todos = user.todos.pull({ _id: id });
 
     await user.save();
 
