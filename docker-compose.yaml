@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - alertify-mongodb:/data/db
+
+  app:
+    image: alertify
+    container_name: alertify-app
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    environment:
+      DB_URI: "mongodb://mongodb:27017"
+
+volumes:
+  alertify-mongodb:
